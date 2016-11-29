@@ -18,6 +18,8 @@ public class RedisLogger implements LoggerEngineProxy, DevLoggerApiConstants {
 
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    final Logger devLogger = LoggerFactory.getLogger("devlogger");
+
     private LoggerAppContext appContext;
 
     private String DEFAULT_REDIS_HOST = "127.0.0.1";
@@ -55,11 +57,11 @@ public class RedisLogger implements LoggerEngineProxy, DevLoggerApiConstants {
         jpc.setMaxTotal(100);
         jedisPool = new JedisPool(jpc, getRedisHost());
         if (jedisPool == null) {
-            logger.error("Failed to connect Redis server with " + getRedisHost());
+            logger.error("Failed to connect Redis server with host " + getRedisHost());
             return false;
         }
 
-        logger.info("Succeeded to connect Redis server with " + getRedisHost());
+        logger.info("Succeeded to connect Redis server with host " + getRedisHost());
         return true;
     }
 
@@ -104,14 +106,15 @@ public class RedisLogger implements LoggerEngineProxy, DevLoggerApiConstants {
                     session.setStartTime(new Date());
 
                     appContext.saveSession(session);
-
                 }
 
                 // Save log.
-                session.increaseCount();
                 Jedis jedis = jedisPool.getResource();
                 try {
-                    jedis.set(LoggerAppFactory.generateLogKey(session), log);
+                    jedis.set(LoggerAppFactory.generateLogKey(session.getSessionKey(), session.increaseCount()), log);
+                    if (devLogger != null) {
+                        devLogger.info(session.getSessionKey() + "\n" + log);
+                    }
                 } finally {
                     jedis.close();
                 }

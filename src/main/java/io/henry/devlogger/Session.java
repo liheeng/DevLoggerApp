@@ -55,9 +55,10 @@ public class Session implements Serializable {
         this.setLastUpdated( this.startTime );
     }
 
-    public void increaseCount( ) {
+    public long increaseCount( ) {
         this.loggingCount++;
         this.setLastUpdated( new Date( ) );
+        return this.loggingCount;
     }
 
     public Date getLastUpdated( ) {

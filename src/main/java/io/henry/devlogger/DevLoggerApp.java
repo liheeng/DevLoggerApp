@@ -24,6 +24,8 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    Logger devLogger = LoggerFactory.getLogger("devlogger");
+
     private LoggerAppContext appContext;
 
     private LoggerEngineProxy loggerEngine;
@@ -70,6 +72,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
 
         vertx.createHttpServer().requestHandler(router::accept).listen(getListenPort(), result -> {
             if (result.succeeded()) {
+                logger.info("The web service starts at port " + getListenPort());
                 fut.complete();
             } else {
                 fut.fail(result.cause());
@@ -89,7 +92,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
                             + ":"
                             + new File("").getCanonicalPath());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
             sendError(404, routeContext.response());
         }
     }
@@ -98,7 +101,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
         try {
             routeContext.response().end("Do not support!");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e);
             sendError(404, routeContext.response());
         }
     }
@@ -150,14 +153,14 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
                     // Dispatch to concrete handler
                     this.apiDispatcher(ApiName.valueOfApi(apiName),
                             new LoggerSessionContext(appContext, routeContext, bizDataObj));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    logger.error(e);
                     sendError(404, routeContext.response());
                 }
             });
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e);
             sendError(404, routeContext.response());
         }
     }
@@ -315,7 +318,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
         try {
             routeContext.response().sendFile("." + routeContext.request().path());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e);
             sendError(404, routeContext.response());
         }
     }

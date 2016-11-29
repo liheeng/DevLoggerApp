@@ -15,8 +15,8 @@ public class LoggerAppFactory {
         return "daqian.devlogger." + appId + "." + clientIp + ".client";
     }
 
-    public static String generateLogKey(Session session) {
-        return session.getSessionKey() + ".log." + session.getLoggingCount();
+    public static String generateLogKey(String sessionKey, long number) {
+        return sessionKey + ".log." + String.valueOf(number);
     }
 
     public static String generateLogKey(Session session, long position) {
