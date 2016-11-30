@@ -22,9 +22,9 @@ import java.util.Properties;
  */
 public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConstants, DevLoggerConstants {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    Logger devLogger = LoggerFactory.getLogger("devlogger");
+    final Logger devLogger = LoggerFactory.getLogger("devlogger");
 
     private LoggerAppContext appContext;
 
@@ -92,7 +92,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
                             + ":"
                             + new File("").getCanonicalPath());
         } catch (IOException e) {
-            logger.error(e);
+            logger.error("Exception happened", e);
             sendError(404, routeContext.response());
         }
     }
@@ -101,7 +101,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
         try {
             routeContext.response().end("Do not support!");
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("Exception happened", e);
             sendError(404, routeContext.response());
         }
     }
@@ -154,13 +154,13 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
                     this.apiDispatcher(ApiName.valueOfApi(apiName),
                             new LoggerSessionContext(appContext, routeContext, bizDataObj));
                 } catch (Exception e) {
-                    logger.error(e);
+                    logger.error("Exception happened", e);
                     sendError(404, routeContext.response());
                 }
             });
 
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("Exception happened", e);
             sendError(404, routeContext.response());
         }
     }
@@ -226,7 +226,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
             sendResponse(bizdata, loggerContext);
 
         } catch (UnsupportedEncodingException e) {
-            logger.error(e);
+            logger.error("Exception happened", e);
         }
     }
 
@@ -242,7 +242,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
             sendResponse(bizdata, loggerContext);
 
         } catch (UnsupportedEncodingException e) {
-            logger.error(e);
+            logger.error("Exception happened", e);
         }
     }
 
@@ -268,7 +268,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
             sendResponse(bizdata, loggerContext);
 
         } catch (UnsupportedEncodingException e) {
-            logger.error(e);
+            logger.error("Exception happened", e);
         }
     }
 
@@ -286,7 +286,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
             sendResponse(bizdata, loggerContext);
 
         } catch (UnsupportedEncodingException e) {
-            logger.error(e);
+            logger.error("Exception happened", e);
         }
     }
 
@@ -318,7 +318,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
         try {
             routeContext.response().sendFile("." + routeContext.request().path());
         } catch (Exception e) {
-            logger.error(e);
+            logger.error("Exception happened", e);
             sendError(404, routeContext.response());
         }
     }

@@ -195,7 +195,7 @@ public class RedisLogger implements LoggerEngineProxy, DevLoggerApiConstants {
         try {
             return (Session) LoggerAppFactory.toJavaObject(jedis.get(sessionKey), Session.class);
         } catch (IOException e) {
-            logger.error(e);
+            logger.error("Exception happened", e);
         } finally {
             jedis.close();
         }

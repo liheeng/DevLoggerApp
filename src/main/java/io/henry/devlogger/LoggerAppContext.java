@@ -31,7 +31,9 @@ public class LoggerAppContext {
         Session s = sessionMap.get( sessionKey );
         if ( s == null ) {
             s = this.loggerEngine.getSession( sessionKey );
-            sessionMap.put( sessionKey, s );
+            if (s != null) {
+                sessionMap.put(sessionKey, s);
+            }
         }
         return s;
     }
