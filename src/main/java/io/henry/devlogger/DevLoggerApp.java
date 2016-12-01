@@ -26,6 +26,8 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
 
     final Logger devLogger = LoggerFactory.getLogger("devlogger");
 
+    final Logger requestLogger = LoggerFactory.getLogger("requestlogger");
+
     private LoggerAppContext appContext;
 
     private LoggerEngineProxy loggerEngine;
@@ -146,6 +148,8 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
                     }
 
                     // Get biz data and api.
+                    requestLogger.info(formJson.toString());
+
                     String rawBizData = formJson.getString(API_BIZ_DATA);
                     JsonObject bizDataObj = new JsonObject(rawBizData);
                     String apiName = bizDataObj.getString(API_API_NAME);
