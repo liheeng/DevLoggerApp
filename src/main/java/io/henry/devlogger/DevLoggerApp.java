@@ -1,7 +1,6 @@
 package io.henry.devlogger;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.*;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
@@ -325,5 +324,20 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
             logger.error("Exception happened", e);
             sendError(404, routeContext.response());
         }
+    }
+
+    public static void main(String[] args) {
+        VertxOptions vo = new VertxOptions();
+        vo.setEventLoopPoolSize(16);
+        Vertx vertx = Vertx.vertx(vo);
+        DeploymentOptions options = new DeploymentOptions();
+        options.setInstances(100);
+        options.setMultiThreaded(true);
+        vertx.deployVerticle(DevLoggerApp.class.getName(), options, e -> {
+            System.out.println(e.succeeded());
+            System.out.println(e.failed());
+            System.out.println(e.cause());
+            System.out.println(e.result());
+        });
     }
 }
