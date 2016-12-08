@@ -9,7 +9,8 @@ import java.util.Map;
 public enum ApiName {
     LOGGING("daqian.devlogger.logging"),
     QUERY_LOGS("daqian.devlogger.query_logs"),
-    QUERY_CLIENTS("daqian.devlogger.query_clients");
+    QUERY_CLIENTS("daqian.devlogger.query_clients"),
+    CLEAR_LOGS("daqian.devlogger.clear_logs");
 
     private String name;
 
@@ -18,11 +19,10 @@ public enum ApiName {
     }
 
     private static Map<String, ApiName> map = new HashMap<String, ApiName>();
-
     static {
-        map.put(LOGGING.name, LOGGING);
-        map.put(QUERY_LOGS.name, QUERY_LOGS);
-        map.put(QUERY_CLIENTS.name, QUERY_CLIENTS);
+        for (ApiName an : ApiName.class.getEnumConstants()) {
+            map.put(an.name, an);
+        }
     }
 
     public static ApiName valueOfApi(String name) {

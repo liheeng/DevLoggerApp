@@ -24,4 +24,6 @@ interface LoggerEngineProxy extends DevLoggerConstants {
     String saveSession(Session session) throws JsonProcessingException;
 
     Session getSession(String sessionKey);
+
+    LoggerResult clear(LoggerSessionContext loggerContext);
 }

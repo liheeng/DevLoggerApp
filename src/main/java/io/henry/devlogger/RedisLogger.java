@@ -110,14 +110,19 @@ public class RedisLogger implements LoggerEngineProxy, DevLoggerApiConstants {
 
                 // Save log.
                 Jedis jedis = jedisPool.getResource();
+
                 try {
-                    jedis.set(LoggerAppFactory.generateLogKey(session.getSessionKey(), session.increaseCount()), log);
+                    synchronized (session) {
+                        jedis.set(LoggerAppFactory.generateLogKey(session.getSessionKey(), session.increaseCount()), log);
+
+                    }
                     if (devLogger != null) {
                         devLogger.info(session.getSessionKey() + "\n" + log);
                     }
                 } finally {
                     jedis.close();
                 }
+
 
                 // Update session.
                 appContext.saveSession(session);
@@ -201,5 +206,43 @@ public class RedisLogger implements LoggerEngineProxy, DevLoggerApiConstants {
         }
 
         return null;
+    }
+
+    @Override
+    public LoggerResult clear(LoggerSessionContext loggerContext) {
+        String appId = loggerContext.getRequestData().getString(API_APP_ID);
+        String clientIp = loggerContext.getRequestData().getString(API_CLIENT_IP);
+
+        LoggerResult result = new LoggerResult();
+        // Find session.
+        Session session = appContext.getSession(LoggerAppFactory.generateSessionKey(clientIp, appId));
+
+        // Clear logs.
+        if (session != null && session.getLoggingCount() > 0) {
+            // Get logs
+            Jedis jedis = jedisPool.getResource();
+            try {
+                synchronized (session) {
+                    String[] keys = new String[(int) session.getLoggingCount()];
+                    for(int i = 0; i < keys.length; i++) {
+                        keys[i] = LoggerAppFactory.generateLogKey(session, i);
+                    }
+                    long ret = jedis.del(keys);
+                    if (ret > 0) {
+                        session.setLoggingCount(0);
+                    } else {
+                        result.setErrorCode(ErrorCode.NO_LOGS_CLEARED);
+                    }
+                }
+
+            } finally {
+                jedis.close();
+            }
+
+        } else {
+            result.setErrorCode(ErrorCode.NO_SESSION_LOGS);
+        }
+
+        return result;
     }
 }

@@ -27,6 +27,8 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
 
     final Logger requestLogger = LoggerFactory.getLogger("requestlogger");
 
+    final Logger clientrequestLogger = LoggerFactory.getLogger("clientrequest");
+
     private LoggerAppContext appContext;
 
     private LoggerEngineProxy loggerEngine;
@@ -113,7 +115,8 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
             HttpServerRequest httpServerRequest = req.bodyHandler(res -> {
                 try {
                     String formstr = new String(res.getBytes(), "UTF-8");
-                    formstr = JavascriptUtil.decodeURIComponent(formstr);
+                    // Get biz data and api.
+                    requestLogger.info(formstr);
                     JsonObject formJson = new JsonObject();
 
                     // Parse request form json object.
@@ -146,11 +149,8 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
                             formJson = new JsonObject();
                     }
 
-                    // Get biz data and api.
-                    requestLogger.info(formJson.toString());
-
                     String rawBizData = formJson.getString(API_BIZ_DATA);
-                    JsonObject bizDataObj = new JsonObject(rawBizData);
+                    JsonObject bizDataObj = new JsonObject(JavascriptUtil.decodeURIComponent(rawBizData));
                     String apiName = bizDataObj.getString(API_API_NAME);
 
                     // Dispatch to concrete handler
@@ -177,6 +177,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
         switch (apiName) {
             case LOGGING:
                 // Save logs.
+                clientrequestLogger.info(loggerContext.getRequestData());
                 handleLogging(apiName, loggerContext);
                 break;
 
@@ -190,9 +191,31 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
                 handleQueryLogs(apiName, loggerContext);
                 break;
 
+            case CLEAR_LOGS:
+                handleClearLogs(apiName, loggerContext);
+                break;
+
             default:
                 // Unknown.
                 handleDefault(apiName, loggerContext);
+        }
+    }
+
+    private void handleClearLogs(ApiName apiName, LoggerSessionContext loggerContext) {
+        LoggerResult result = loggerEngine.clear(loggerContext);
+
+        try {
+            // Assemble biz data json object.
+            JsonObject bizdata = new JsonObject();
+            bizdata.put(API_API_NAME, apiName.getName());
+            bizdata.put(API_RESULT_CODE, result.getErrorCode().getName());
+            bizdata.put(API_SHOW_MESSAGE, result.getErrorCode().getContent());
+
+            // Send response.
+            sendResponse(bizdata, loggerContext);
+
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Exception happened", e);
         }
     }
 
@@ -332,7 +355,7 @@ public class DevLoggerApp extends AbstractVerticle implements DevLoggerApiConsta
         Vertx vertx = Vertx.vertx(vo);
         DeploymentOptions options = new DeploymentOptions();
         options.setInstances(100);
-        options.setMultiThreaded(true);
+//        options.setMultiThreaded(true);
         vertx.deployVerticle(DevLoggerApp.class.getName(), options, e -> {
             System.out.println(e.succeeded());
             System.out.println(e.failed());

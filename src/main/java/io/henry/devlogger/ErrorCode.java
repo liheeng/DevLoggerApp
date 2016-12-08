@@ -14,7 +14,8 @@ public enum ErrorCode {
     NO_SESSION_LOGS(20004, "20004", "not found logs of specified session."),
     LOG_POSITION_ERROR(20005, "20005", "given log position is error."),
     UNKNOWN_REQUEST(20006, "20006", "unkown request."),
-    NO_SESSIONS(20007, "20007", "no sessions");
+    NO_SESSIONS(20007, "20007", "no sessions."),
+    NO_LOGS_CLEARED(20008, "20008", "no logs cleared.");
 
     private int id;
     private String name;

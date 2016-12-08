@@ -79,25 +79,13 @@ desired effect
 
                         <div class="box">
                             <div class="box-header">
-                                <button id="btn_back" class="btn">
-                                  <i id="btn_back_i" class="fa fa-home">返回客户端列表</i>
-                                </button>
-                                <button id="btn_remove" class="btn">
-                                    <i id="btn_remove_i" class="fa fa-times">清空</i>
-                                </button>
-                                <button id="btn_query_log" class="btn">
-                                    <i id="btn_query_log_i" class="fa fa-play"></i>
-                                </button> 从:
-                                <input id="input_start_log_number" style="width:40px" value="1" />条记录 到
-                                <input id="input_end_log_number" style="width:40px" value="最后">条记录
-                                    背景式样：
                                 <div class="btn-group">
-
+                                    <button class="btn">显示</button>
                                     <button id="btn_selected_theme_item" type="button" class="btn btn-default">terminal</button>
                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <span class="caret"></span>
-                    <span class="sr-only">Toggle Dropdown</span>
-                  </button>
+                                        <span class="caret"></span>
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
                                     <ul class="dropdown-menu" role="menu">
                                         <li onclick="enableAceEditorTheme('terminal')"><a>terminal</a></li>
                                         <li onclick="enableAceEditorTheme('chrome')"><a>chrome</a></li>
@@ -107,6 +95,25 @@ desired effect
                                         <li onclick="enableAceEditorTheme('xcode')"><a>xcode</a></li>
                                     </ul>
                                 </div>
+                                <!-- end of button group -->
+                                <button id="btn_back" class="btn">
+                                  <i id="btn_back_i" class="fa fa-home">返回客户端列表</i>
+                                </button>
+                                
+                                <button id="btn_query_log" class="btn">
+                                    <i id="btn_query_log_i" class="fa fa-play"></i>
+                                    从:
+                                    <input id="input_start_log_number" style="width:40px" value="1" />条记录 到
+                                    <input id="input_end_log_number" style="width:40px" value="最后">条记录
+                                 </button>
+                        
+                                <button id="btn_remove" class="btn">
+                                    <i id="btn_remove_i" class="fa fa-times">清空</i>
+                                </button>
+                              
+                                <button id="btn_delete_remote_logs" class="btn">
+                                    <i id="btn_delete_remote_logs_i" class="fa fa-eraser" style="color:red;">删除所有日志</i>
+                                </button>
                             </div>
                             <!-- /.box-header -->
                             <div class="box-body pad">
@@ -180,7 +187,7 @@ desired effect
 
             var queryRequest = {
                 version: '1.0.0',
-                bizdata: JSON.stringify(queryBizData),
+                bizdata: encodeURIComponent(JSON.stringify(queryBizData)),
                 sign: '',
                 signtype: 'RSA'
             };
@@ -192,7 +199,7 @@ desired effect
                 dataType: 'json',
                 data: JSON.stringify(queryRequest),
                 success: function(data, sat) {
-                    var d = decodeURI(data.bizdata);
+                    var d = decodeURIComponent(data.bizdata);
                     d = d.replace(/%3A/g, ":").replace(/%2C/g, ",");
                     d = $.parseJSON(d);
                     if (d && d.logs) {
@@ -233,14 +240,52 @@ desired effect
                 stopGettingLogs();
             }
         });
-        $('#btn_remove').click(function() {
+        var clearLogs = function() {
             stopGettingLogs();
             editor.selectAll();
             editor.removeLines();
-        });
+        };
+        $('#btn_remove').click(clearLogs);
+
         $('#btn_back_i').click(function() {
             location.href = '/webroot/clientlist.html';
         });
+
+        var deleteLogs = function() {
+            var urlParams = getUrlVars();
+            
+            var queryBizData = {
+                api_name: 'daqian.devlogger.clear_logs',
+                app_id: urlParams['appId'],
+                client_ip: urlParams['clientIp']
+            }
+
+            var queryRequest = {
+                version: '1.0.0',
+                bizdata: encodeURIComponent(JSON.stringify(queryBizData)),
+                sign: '',
+                signtype: 'RSA'
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/api.do',
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify(queryRequest),
+                success: function(data, sat) {
+                    clearLogs();
+                },
+                error: function(req, sat, err) {
+
+                }
+            })
+        };
+        $('#btn_delete_remote_logs_i').click(function() {
+            deleteLogs();
+            updateStartAndEnd('0', 'last');
+        });
+
         //
     </script>
     <!-- End of ACE editor -->

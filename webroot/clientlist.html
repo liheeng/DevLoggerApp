@@ -112,7 +112,7 @@ desired effect
 
             var queryRequest = {
                 version: '1.0.0',
-                bizdata: JSON.stringify(queryBizData),
+                bizdata: encodeURIComponent(JSON.stringify(queryBizData)),
                 sign: '',
                 signtype: 'RSA'
             };
@@ -128,7 +128,7 @@ desired effect
                 dataType: 'json',
                 data: JSON.stringify(queryRequest),
                 success: function(data, sat) {
-                    var d = decodeURI(data.bizdata);
+                    var d = decodeURIComponent(data.bizdata);
                     d = d.replace(/%3A/g, ":").replace(/%2C/g, ",");
                     d = $.parseJSON(d);
 
