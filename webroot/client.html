@@ -14,9 +14,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Bootstrap 3.3.6 -->
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="ionicons/css/ionicons.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -99,18 +99,18 @@ desired effect
                                 <button id="btn_back" class="btn">
                                   <i id="btn_back_i" class="fa fa-home">返回客户端列表</i>
                                 </button>
-                                
+
                                 <button id="btn_query_log" class="btn">
                                     <i id="btn_query_log_i" class="fa fa-play"></i>
                                     从:
                                     <input id="input_start_log_number" style="width:40px" value="1" />条记录 到
                                     <input id="input_end_log_number" style="width:40px" value="最后">条记录
                                  </button>
-                        
+
                                 <button id="btn_remove" class="btn">
                                     <i id="btn_remove_i" class="fa fa-times">清空</i>
                                 </button>
-                              
+
                                 <button id="btn_delete_remote_logs" class="btn">
                                     <i id="btn_delete_remote_logs_i" class="fa fa-eraser" style="color:red;">删除所有日志</i>
                                 </button>
@@ -140,7 +140,7 @@ desired effect
     <!-- REQUIRED JS SCRIPTS -->
 
     <!-- jQuery 2.2.3 -->
-    <script src="plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="plugins/jQuery/jquery-2.2.4.min.js"></script>
     <!-- Bootstrap 3.3.6 -->
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <!-- AdminLTE App -->
@@ -253,7 +253,7 @@ desired effect
 
         var deleteLogs = function() {
             var urlParams = getUrlVars();
-            
+
             var queryBizData = {
                 api_name: 'daqian.devlogger.clear_logs',
                 app_id: urlParams['appId'],
